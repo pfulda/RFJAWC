@@ -3,8 +3,6 @@
 % load in the phasemap
 phase_m = load('interpphasemap.txt');
 
-
-%%
 mm=1e3;
 % set up the grid axes
 X = linspace(-0.002, 0.002, 401);
@@ -36,8 +34,9 @@ set(gca,'clim',[min(min(abs(initbeam).^2)) max(max(abs(initbeam).^2))]);
 %view(2)
 axis square
 
-% apply the phase map to the beam (exaggerate 100x for plot)
+% apply the phase map to the beam (exaggerate 100x for plot option)
 mapscale=1;
+%mapscale=100;
 defbeam=initbeam.*exp(1i*phase_m*mapscale);
 
 % decompose in the intial beam basis
@@ -110,78 +109,3 @@ for n=1:11
 end
 
 FT_print_gauss_coefficients(defgc,0,1)
-%%
-postEOBDbeam=FT_mode_coefficients_to_field(defgc,gp,X,Y,[0,0,0],0);
-
-gp=FT_init_gauss_param(lambda,1.7,'w0',250e-6,'z',1);
-
-postEOBDbeamprop=FT_mode_coefficients_to_field(defgc,gp,X,Y,[0,0,0],0);
-
-% defgc=FT_mode_content(gc,gp,defbeam,X,Y,[0,0,0]);
-% 
-% FT_print_gauss_coefficients(defgc,1e-9,1);
-
-figure()
-subplot(211)
-plot(X,abs(initfield(:,50)).^2)
-hold on 
-plot(X,abs(propfield(:,50)).^2)
-legend('initial','prop')
-subplot(212)
-plot(X,angle(initfield(:,50)))
-hold on
-plot(X,angle(propfield(:,50)))
-legend('initial','prop')
-%% see if I can even propagate beams properly here
-
-gp=FT_init_gauss_param(lambda,1.5,'w0',500e-6,'z',0);
-gc=FT_init_gauss_coefficients('HG',1);
-gc.value=[1,0.1i,0];
-FT_print_gauss_coefficients(gc,0,1);
-initfield=FT_mode_coefficients_to_field(gc,gp,X,Y,[0,0,0],1);
-
-gp=FT_update_gauss_param(gp,gp.q+1,gp.nr);
-propfield=FT_mode_coefficients_to_field(gc,gp,X,Y,[0,0,0],1);
-
-propgc=FT_mode_content(gc,gp,propfield,X,Y,[0,0,0]);
-
-FT_print_gauss_coefficients(propgc,0,1);
-
-figure()
-subplot(211)
-plot(X,abs(initfield(:,50)).^2)
-hold on 
-plot(X,abs(propfield(:,50)).^2)
-subplot(212)
-plot(X,angle(initfield(:,50)))
-hold on
-plot(X,angle(propfield(:,50)))
-
-%%
-
-gp=FT_init_gauss_param(lambda,1.5,'w0',500e-6,'z',1);
-gc=FT_init_gauss_coefficients('HG',1);
-gc.value=[1,0.1i,0];
-FT_print_gauss_coefficients(gc,0,1);
-initfield=FT_mode_coefficients_to_field(gc,gp,X,Y,[0,0,0],1);
-
-gp=FT_update_gauss_param(gp,gp.q-1,gp.nr);
-propfield=FT_mode_coefficients_to_field(gc,gp,X,Y,[0,0,0],1);
-
-propgc=FT_mode_content(gc,gp,propfield,X,Y,[0,0,0]);
-
-FT_print_gauss_coefficients(propgc,0,1);
-
-figure()
-subplot(211)
-plot(X,abs(initfield(:,50)).^2)
-hold on 
-plot(X,abs(propfield(:,50)).^2)
-legend('initial','prop')
-subplot(212)
-plot(X,angle(initfield(:,50)))
-hold on
-plot(X,angle(propfield(:,50)))
-legend('initial','prop')
-
-
